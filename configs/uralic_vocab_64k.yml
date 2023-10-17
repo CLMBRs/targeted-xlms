@@ -1,8 +1,8 @@
 # Sentencepiece vocabulary parameters
 tokenizer_model: unigram
-vocab_size: 32768
+vocab_size: 65536
 train_dataset_path: data/multilingual/uralic_vocab_train_alpha02_5mil.txt
-output_path: tokenizers/uralic_spm_32k
+output_path: tokenizers/uralic_spm_64k
 
 # Paths and alpha for sampling vocab training set
 alpha: 0.2
@@ -32,33 +32,23 @@ data_files:
     erzya:
         directory: data/uralic/erzya
         files: [myv_combined_cleaned.txt]
-    ingrian:
-        directory: data/uralic/ingrian
-        files: [izh_combined_cleaned.txt]
-    karelian:
-        directory: data/uralic/karelian
-        files: [krl_combined_cleaned.txt]
     komi:
         directory: data/uralic/komi
         files: [koi_combined_cleaned.txt]
-    livonian:
-        directory: data/uralic/livonian
-        files: [liv_combined_cleaned.txt]
     mari:
         directory: data/uralic/mari
         files: [mhr_combined_cleaned.txt]
     moksha:
         directory: data/uralic/moksha
         files: [mdf_combined_cleaned.txt]
+    north_finnic:
+        directory: data/uralic/north_finnic
+        files: [ingrian/izh_combined_cleaned.txt, karelian/krl_combined_cleaned_train.txt,
+            livonian/liv_combined_cleaned_train.txt, veps/vep_combined_cleaned_train.txt,
+            votic/vot_combined_cleaned.txt]
     sami:
         directory: data/uralic/sami
         files: [sami_combined_cleaned.txt]
     udmurt:
         directory: data/uralic/udmurt
         files: [udm_combined_cleaned.txt]
-    veps:
-        directory: data/uralic/veps
-        files: [vep_combined_cleaned.txt]
-    votic:
-        directory: data/uralic/votic
-        files: [vot_combined_cleaned.txt]

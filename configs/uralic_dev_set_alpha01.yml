@@ -1,7 +1,7 @@
 # Paths and alpha for sampling dev set
-alpha: 0.2
+alpha: 0.1
 output_length: 100000
-combined_data_output: data/multilingual/uralic_dev_alpha02.txt
+combined_data_output: data/multilingual/uralic_dev_alpha01.txt
 data_files:
     russian:
         directory: data/indo-european/russian
