@@ -1,7 +1,7 @@
 # datasets
-train_dataset_path: data/multilingual/uralic_train_alpha02_20mil
+train_dataset_path: data/multilingual/uralic_train_alpha04_20mil
 sharded_train_dataset: True
-val_dataset_path: data/multilingual/uralic_dev_alpha02.txt
+val_dataset_path: data/multilingual/uralic_dev_alpha04.txt
 mlm_masking_prob: 0.15
 max_seq_len: 256
 
@@ -10,20 +10,20 @@ seed: 1
 hf_model: xlm-roberta-base
 learning_rate: 1e-5
 training_epochs: 1
-train_batch_size: 25
-gradient_accumulation_steps: 8
+train_batch_size: 40
+gradient_accumulation_steps: 5
 logging_steps: 250
 eval_strategy: steps
 eval_steps: 1000
 eval_batch_size: 100
-checkpoints_directory: models/uralic/lapt_alpha02_emb32k
+checkpoints_directory: models/uralic/lapt_alpha04_emb16k
 save_steps: 1000
 saved_checkpoints_limit: 2
 load_best_model_at_end: True
 
 # advanced training options
-new_vocab_file: tokenizers/uralic_spm_32k.model
-new_embedding_path: tokenizers/uralic_emb_32k_focus.pt
+new_vocab_file: tokenizers/uralic_spm_16k.model
+new_embedding_path: tokenizers/uralic_emb_16k_focus.pt
 freeze_main_model: True
 unfreeze_step_ratio: 0.1
 model_freeze_prefix: "roberta.encoder"

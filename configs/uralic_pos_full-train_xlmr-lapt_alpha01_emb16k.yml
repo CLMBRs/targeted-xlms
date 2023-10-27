@@ -1,23 +1,23 @@
 # task setup
 task: pos
-zero_shot_transfer: True
-transfer_source: uralic
-langs: [kpv, krl, mdf, olo, sms]
+zero_shot_transfer: False
+transfer_source: None
+langs: ['myv', 'sme', 'et', 'fi', 'hu', 'ru']
 dataset_path: data/ud-uralic
 # whether to start with a randomly-initialized model
 random_weights: False
 
 # model options
 model_class: xlmr
-model_name: models/uralic/lapt_alpha02_emb32k/best-checkpoint
-tokenizer_path: tokenizers/uralic_spm_32k.model
-checkpoint_path: models/uralic/pos/zero-shot/xlmr_lapt_alpha02_emb32k
+model_name: models/uralic/lapt_alpha01_emb16k/best-checkpoint
+tokenizer_path: tokenizers/uralic_spm_16k.model
+checkpoint_path: models/uralic/pos/full-train/xlmr_lapt_alpha01_emb16k
 
 # training options
 random_seed: 1
 epochs: 64
 batch_size: 36
 gradient_accumulation: 2
-max_train_examples: null
+max_train_examples: 32768
 # checkpoints every two epochs, so patience epochs is this parameter x2
 patience: 4
