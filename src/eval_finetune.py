@@ -51,7 +51,36 @@ class Tagger(torch.nn.Module):
         output = self.proj(output)
         output = F.softmax(output, dim=-1)
         return output
+    
+class Dependency_Tagger(torch.nn.Module):
+    """
+    Tagger class for conducting classification with a pre-trained model. Takes in the pre-trained
+    model as the `encoder` argument on initialization. The tagger/classification-head itself
+    consists of a single linear layer + softmax
+    """
+    def __init__(self, encoder, output_dim):
+        super(Tagger, self).__init__()
 
+        self.encoder = copy.deepcopy(encoder)
+        input_dim = self.encoder.encoder.layer[-1].output.dense.out_features
+
+        self.billinear = torch.nn.Bilinear(input_dim, input_dim, output_dim)
+        self.linear = torch.nn.Linear(input_dim, output_dim, bias = False)
+
+    def forward(self, input_ids, alignments):
+        # run through encoder
+        embed = self.encoder(input_ids).last_hidden_state
+
+        # get single rep for each word
+        feats = []
+        for i in range(embed.shape[0]):
+            feats.extend(_consolidate_features(embed[i], alignments[i]))
+        head_embed = torch.cat(feats, dim=0)
+        child_embed = copy.deepcopy(head_embed)
+
+        biaffine_score = self.billinear(head_embed, child_embed) + self.linear(head_embed) + self.linear(child_embed)
+        output = F.softmax(biaffine_score, dim=-1)
+        return output
 
 def whitespace_to_sentencepiece(tokenizer, dataset, label_space, max_seq_length=512, layer_id=-1):
     """
@@ -502,7 +531,10 @@ def finetune_classification(
             training_complete = False
 
         # create probe model
-        tagger = Tagger(model, len(task_labels))
+        if task=="uas":
+            tagger = Dependency_Tagger(model, len(task_labels))
+        else:
+            tagger = Tagger(model, len(task_labels))
         tagger_bsz = args.batch_size
 
         # only do training if we can't retrieve the existing checkpoint
