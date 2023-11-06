@@ -362,7 +362,7 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
         return f1_score(true, predicted)
         
         #To add:
-        elif metric == 'uas':
+    elif metric == 'uas':
         
         correct_arcs = 0
         total_arcs = 0
