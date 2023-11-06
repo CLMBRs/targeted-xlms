@@ -366,6 +366,12 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
         
         correct_arcs = 0
         total_arcs = 0
+        # correct_arcs = 0
+        # total_arcs = len(labels)
+        # for i in range(len(labels)):
+        #     if labels[i] == predicted_labels[i]:
+        #         correct_arcs += 1
+        # UAS = correct_arcs / total_arcs
 
         for i in range(0, len(data), bsz):
             if i + bsz > len(data):
@@ -389,6 +395,13 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
         
         correct_arcs = 0
         total_arcs = 0
+
+        # correct_labeled_arcs = 0
+        # total_arcs = len(labels)
+        # for i in range(len(labels)):
+        #     if labels[i] == predicted_labels[i] and head_labels[i] == labels[i]:
+        #     correct_labeled_arcs += 1
+        # LAS = correct_labeled_arcs / total_arcs
 
         for i in range(0, len(data), bsz):
             if i + bsz > len(data):
