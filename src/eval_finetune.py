@@ -360,6 +360,53 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
             predicted.append([int2tag[x] for x in preds])
 
         return f1_score(true, predicted)
+        
+        #To add:
+        elif metric == 'uas':
+        
+        correct_arcs = 0
+        total_arcs = 0
+
+        for i in range(0, len(data), bsz):
+            if i + bsz > len(data):
+                batch_data = data[i:]
+            else:
+                batch_data = data[i:i + bsz]
+            input_ids, alignments, labels = batchify(batch_data, pad_idx)
+
+            input_ids = input_ids.to('cuda:0')
+
+            with torch.no_grad():
+                output = model.forward(input_ids, alignments)
+
+            
+
+        uas_score = correct_arcs / total_arcs
+        return uas_score
+
+    # Labeled Attachment Score (LAS) 
+    elif metric == 'las':
+        
+        correct_arcs = 0
+        total_arcs = 0
+
+        for i in range(0, len(data), bsz):
+            if i + bsz > len(data):
+                batch_data = data[i:]
+            else:
+                batch_data = data[i:i + bsz]
+            input_ids, alignments, labels = batchify(batch_data, pad_idx)
+
+            input_ids = input_ids.to('cuda:0')
+
+            with torch.no_grad():
+                output = model.forward(input_ids, alignments)
+
+            # To add:
+
+        las_score = correct_arcs / total_arcs
+        return las_score
+
 
     else:
         raise Exception(f'Evaluation metric not recognized: {metric}')
