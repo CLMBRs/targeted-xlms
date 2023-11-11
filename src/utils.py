@@ -41,7 +41,9 @@ _label_spaces = {
         'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'SYM', 'VERB',\
         'X'],
     #ner documentation: https://huggingface.co/datasets/wikiann
-    'ner': [x for x in range(7)]
+    'ner': [x for x in range(7)],
+    #uas tag: xlmr max sequence length
+    "uas": [x for x in range(256+1)] #root is 0 and word_id can be 1 to 256
     }
 
 _xlmr_special_tokens = ['<s>', '</s>', '<unk>', '<pad>', '<mask>']
@@ -85,7 +87,7 @@ def load_hf_model(model_type, model_name, task='ppl', random_weights=False, toke
     return model, tokenizer
 
 
-def _load_word_level_ud(file_path):
+def _load_word_level_ud(file_path, task="pos"): #task options pos and uas
     dataset = []
 
     example_sent = []
@@ -111,6 +113,8 @@ def _load_word_level_ud(file_path):
 
                 #using upos for part of speech task instead of xpos
                 label = upos
+                if task=="uas":
+                    label=int(head)
 
                 example_sent.append(word)
                 example_labels.append(label)
@@ -135,7 +139,7 @@ def _load_ud_text(file_path):
     return dataset
 
 
-def load_ud_splits(data_path, lang, splits=['train', 'dev', 'test']):
+def load_ud_splits(data_path, lang, splits=['train', 'dev', 'test'], task="pos"): #task can be pos (default) or uas
     ud_files = os.listdir(data_path)
     split_data = {}
     for split_name in splits:
@@ -143,7 +147,7 @@ def load_ud_splits(data_path, lang, splits=['train', 'dev', 'test']):
         assert len(split_file) == 1
         split_file = split_file[0]
         split_path = os.path.join(data_path, split_file)
-        split_data[split_name] = _load_word_level_ud(split_path)
+        split_data[split_name] = _load_word_level_ud(split_path, task=task)
 
     return split_data if len(splits) > 1 else split_data[splits[0]]
 

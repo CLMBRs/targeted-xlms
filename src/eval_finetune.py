@@ -20,7 +20,8 @@ from utils import (
 
 _loader_functions_by_task = {
     'pos': load_ud_splits,
-    'ner': load_ner_splits
+    'ner': load_ner_splits,
+    'uas': load_ud_splits
 }
 
 
@@ -62,10 +63,12 @@ class Dependency_Tagger(torch.nn.Module):
         super(Tagger, self).__init__()
 
         self.encoder = copy.deepcopy(encoder)
-        input_dim = self.encoder.encoder.layer[-1].output.dense.out_features
+        input_dim = self.encoder.encoder.layer[-1].output.dense.out_features # (seq len)
+        mlp_size = input_dim / 2
+        self.mlp_layer = torch.nn.Linear(input_dim, mlp_size)
 
-        self.billinear = torch.nn.Bilinear(input_dim, input_dim, output_dim)
-        self.linear = torch.nn.Linear(input_dim, output_dim, bias = False)
+        self.linear_weight = torch.nn.Linear(mlp_size, mlp_size, bias = False)
+        self.linear_bias = torch.nn.Linear(mlp_size, 1, bias = False)
 
     def forward(self, input_ids, alignments):
         # run through encoder
@@ -75,11 +78,12 @@ class Dependency_Tagger(torch.nn.Module):
         feats = []
         for i in range(embed.shape[0]):
             feats.extend(_consolidate_features(embed[i], alignments[i]))
-        head_embed = torch.cat(feats, dim=0)
-        child_embed = copy.deepcopy(head_embed)
+        head_embed = self.mlp_layer(torch.cat(feats, dim=0)) #(seq len,1) & (seq len, mlp)->(seq len,mlp_size)
+        child_embed = copy.deepcopy(head_embed) #(seq len,mlp_size)
 
-        biaffine_score = self.billinear(head_embed, child_embed) + self.linear(head_embed) + self.linear(child_embed)
-        output = F.softmax(biaffine_score, dim=-1)
+        partial_weight_mul = self.linear_weight(head_embed) # (seq len, mlp_size)
+        biaffine_score = child_embed.matmul(partial_weight_mul.transpose(0,1)) + self.linear_bias(head_embed.transpose(0,1)) #(seq len,seq len)+(seq len,1)
+        output = F.softmax(biaffine_score, dim=-1) #(seq len, seq len)
         return output
 
 def whitespace_to_sentencepiece(tokenizer, dataset, label_space, max_seq_length=512, layer_id=-1):
@@ -511,12 +515,12 @@ def finetune_classification(
     # the test set for each of the languages in `args.langs`. Pre-process the data
     if do_zero_shot:
         train_valid_data = split_loader_function(
-            data_path, args.transfer_source, splits=['train', 'dev']
+            data_path, args.transfer_source, splits=['train', 'dev'], task=task
         )
         train_text_data = train_valid_data['train']
         valid_text_data = train_valid_data['dev']
         test_text_data = {
-            lg: split_loader_function(data_path, lg, splits=['test'])
+            lg: split_loader_function(data_path, lg, splits=['test'], task=task)
             for lg in args.langs
         }
 
@@ -541,7 +545,7 @@ def finetune_classification(
         print("########")
         print(f"Beginning {task.upper()} evaluation for {lang}")
         # load train and eval data for probing on given langauge
-        data_splits = split_loader_function(data_path, lang)
+        data_splits = split_loader_function(data_path, lang, task=task)
         train_text_data, valid_text_data, test_text_data = [
             data_splits[x] for x in ['train', 'dev', 'test']
         ]
