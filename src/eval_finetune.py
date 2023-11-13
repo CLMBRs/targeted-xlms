@@ -78,12 +78,12 @@ class Dependency_Tagger(torch.nn.Module):
         feats = []
         for i in range(embed.shape[0]):
             feats.extend(_consolidate_features(embed[i], alignments[i]))
-        head_embed = self.mlp_layer(torch.cat(feats, dim=0)) #(seq len,1) & (seq len, mlp)->(seq len,mlp_size)
-        child_embed = copy.deepcopy(head_embed) #(seq len,mlp_size)
+        head_embed = self.mlp_layer(torch.cat(feats, dim=0)) #(batch, seq len,1) & (batch, seq len, mlp)->(batch, seq len,mlp_size)
+        child_embed = copy.deepcopy(head_embed) #(batch, seq len,mlp_size)
 
-        partial_weight_mul = self.linear_weight(head_embed) # (seq len, mlp_size)
-        biaffine_score = child_embed.matmul(partial_weight_mul.transpose(0,1)) + self.linear_bias(head_embed.transpose(0,1)) #(seq len,seq len)+(seq len,1)
-        output = F.softmax(biaffine_score, dim=-1) #(seq len, seq len)
+        partial_weight_mul = self.linear_weight(head_embed) # (batch, seq len, mlp_size)
+        biaffine_score = torch.bmm(child_embed,partial_weight_mul.transpose(1,2)) + self.linear_bias(head_embed.transpose(1,2)) #(batch,seq len,seq len)+(batch, seq len,1)
+        output = F.softmax(biaffine_score, dim=-1) #(batch_size,seq len,seq len)
         return output
 
 def whitespace_to_sentencepiece(tokenizer, dataset, label_space, max_seq_length=512, layer_id=-1):
