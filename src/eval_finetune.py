@@ -395,34 +395,34 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
         return uas_score
 
     # Labeled Attachment Score (LAS) 
-    elif metric == 'las':
+    # elif metric == 'las':
         
-        correct_arcs = 0
-        total_arcs = 0
+    #     correct_arcs = 0
+    #     total_arcs = 0
 
-        # correct_labeled_arcs = 0
-        # total_arcs = len(labels)
-        # for i in range(len(labels)):
-        #     if labels[i] == predicted_labels[i] and head_labels[i] == labels[i]:
-        #     correct_labeled_arcs += 1
-        # LAS = correct_labeled_arcs / total_arcs
+    #     # correct_labeled_arcs = 0
+    #     # total_arcs = len(labels)
+    #     # for i in range(len(labels)):
+    #     #     if labels[i] == predicted_labels[i] and head_labels[i] == labels[i]:
+    #     #     correct_labeled_arcs += 1
+    #     # LAS = correct_labeled_arcs / total_arcs
 
-        for i in range(0, len(data), bsz):
-            if i + bsz > len(data):
-                batch_data = data[i:]
-            else:
-                batch_data = data[i:i + bsz]
-            input_ids, alignments, labels = batchify(batch_data, pad_idx)
+    #     for i in range(0, len(data), bsz):
+    #         if i + bsz > len(data):
+    #             batch_data = data[i:]
+    #         else:
+    #             batch_data = data[i:i + bsz]
+    #         input_ids, alignments, labels = batchify(batch_data, pad_idx)
 
-            input_ids = input_ids.to('cuda:0')
+    #         input_ids = input_ids.to('cuda:0')
 
-            with torch.no_grad():
-                output = model.forward(input_ids, alignments)
+    #         with torch.no_grad():
+    #             output = model.forward(input_ids, alignments)
 
-            # To add:
+    #         # To add:
 
-        las_score = correct_arcs / total_arcs
-        return las_score
+    #     las_score = correct_arcs / total_arcs
+    #     return las_score
 
 
     else:
