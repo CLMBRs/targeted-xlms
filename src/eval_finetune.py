@@ -60,11 +60,11 @@ class Dependency_Tagger(torch.nn.Module):
     consists of a single linear layer + softmax
     """
     def __init__(self, encoder, output_dim):
-        super(Tagger, self).__init__()
+        super(Dependency_Tagger, self).__init__()
 
         self.encoder = copy.deepcopy(encoder)
         input_dim = self.encoder.encoder.layer[-1].output.dense.out_features # (seq len)
-        mlp_size = input_dim / 2
+        mlp_size = int(input_dim / 2)
         self.mlp_layer = torch.nn.Linear(input_dim, mlp_size)
 
         self.linear_weight = torch.nn.Linear(mlp_size, mlp_size, bias = False)
@@ -79,7 +79,7 @@ class Dependency_Tagger(torch.nn.Module):
         for i in range(embed.shape[0]):
             feats.extend(_consolidate_features(embed[i], alignments[i]))
         head_embed = self.mlp_layer(torch.cat(feats, dim=0)) #(batch, seq len,1) & (batch, seq len, mlp)->(batch, seq len,mlp_size)
-        child_embed = copy.deepcopy(head_embed) #(batch, seq len,mlp_size)
+        child_embed = self.mlp_layer(torch.cat(feats, dim=0)) #(batch, seq len,mlp_size)
 
         partial_weight_mul = self.linear_weight(head_embed) # (batch, seq len, mlp_size)
         biaffine_score = torch.bmm(child_embed,partial_weight_mul.transpose(1,2)) + self.linear_bias(head_embed.transpose(1,2)) #(batch,seq len,seq len)+(batch, seq len,1)
