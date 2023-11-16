@@ -113,8 +113,8 @@ def _load_word_level_ud(file_path, task="pos"): #task options pos and uas
 
                 #using upos for part of speech task instead of xpos
                 label = upos
-                if task=="uas":
-                    label=int(head)
+                if task == "uas":
+                    label = int(head) if head != '_' else None
 
                 example_sent.append(word)
                 example_labels.append(label)
