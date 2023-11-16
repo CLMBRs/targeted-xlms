@@ -365,17 +365,10 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
 
         return f1_score(true, predicted)
         
-        #To add:
+        #To add:LAS
     elif metric == 'uas':
-        
-        correct_arcs = 0
-        total_arcs = 0
-        # correct_arcs = 0
-        # total_arcs = len(labels)
-        # for i in range(len(labels)):
-        #     if labels[i] == predicted_labels[i]:
-        #         correct_arcs += 1
-        # UAS = correct_arcs / total_arcs
+        gold_heads, gold_labels = [], []
+        predicted_heads, predicted_labels = [], []
 
         for i in range(0, len(data), bsz):
             if i + bsz > len(data):
@@ -385,45 +378,28 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
             input_ids, alignments, labels = batchify(batch_data, pad_idx)
 
             input_ids = input_ids.to('cuda:0')
+            labels = labels.to('cuda:0')
 
             with torch.no_grad():
                 output = model.forward(input_ids, alignments)
+            _, preds = torch.topk(output, k=1, dim=-1)
 
-            
+            gold_heads.extend([head.item() for sentence in labels for head in sentence])
+            predicted_heads.extend([head.item() for sentence in preds for head in sentence])
 
-        uas_score = correct_arcs / total_arcs
-        return uas_score
+            gold_labels.extend([label.item() for sentence in labels for label in sentence])
+            predicted_labels.extend([label.item() for sentence in preds for label in sentence])
 
-    # Labeled Attachment Score (LAS) 
-    # elif metric == 'las':
-        
-    #     correct_arcs = 0
-    #     total_arcs = 0
+        # LAS
+        correct_heads = [1 if gold_head == pred_head else 0 for gold_head, pred_head in zip(gold_heads, predicted_heads)]
+        las = sum(correct_heads) / len(correct_heads)
 
-    #     # correct_labeled_arcs = 0
-    #     # total_arcs = len(labels)
-    #     # for i in range(len(labels)):
-    #     #     if labels[i] == predicted_labels[i] and head_labels[i] == labels[i]:
-    #     #     correct_labeled_arcs += 1
-    #     # LAS = correct_labeled_arcs / total_arcs
+        # UAS
+        # correct_labels = [1 if gold_label == pred_label else 0 for gold_label, pred_label in zip(gold_labels, predicted_labels)]
+        # uas = sum(correct_labels) / len(correct_labels)
 
-    #     for i in range(0, len(data), bsz):
-    #         if i + bsz > len(data):
-    #             batch_data = data[i:]
-    #         else:
-    #             batch_data = data[i:i + bsz]
-    #         input_ids, alignments, labels = batchify(batch_data, pad_idx)
-
-    #         input_ids = input_ids.to('cuda:0')
-
-    #         with torch.no_grad():
-    #             output = model.forward(input_ids, alignments)
-
-    #         # To add:
-
-    #     las_score = correct_arcs / total_arcs
-    #     return las_score
-
+        return las
+    
 
     else:
         raise Exception(f'Evaluation metric not recognized: {metric}')
