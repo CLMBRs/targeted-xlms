@@ -782,7 +782,15 @@ if __name__ == "__main__":
     args.learning_rate = getattr(args, 'learning_rate', float('5.0e-6'))
     args.max_grad_norm = getattr(args, 'max_grad_norm', 1.0)
 
-    args.eval_metric = 'ner_f1' if args.task == 'ner' else 'acc'
+    #args.eval_metric = 'ner_f1' if args.task == 'ner' else 'acc'
+    #account for task = uas
+    if args.task == 'ner':
+        args.eval_metric = 'ner_f1'
+    elif args.task == 'uas':
+        args.eval_metric = 'uas'
+    else:
+        args.eval_metric = 'acc'
+
 
     # ensure that given lang matches given task
     #for lang in args.langs:
