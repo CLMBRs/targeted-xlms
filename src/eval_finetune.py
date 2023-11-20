@@ -393,15 +393,15 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
             gold_labels.extend([label.item() for sentence in labels for label in sentence])
             predicted_labels.extend([label.item() for sentence in preds for label in sentence])
 
-        # LAS
-        correct_heads = [1 if gold_head == pred_head else 0 for gold_head, pred_head in zip(gold_heads, predicted_heads)]
-        las = sum(correct_heads) / len(correct_heads)
-
         # UAS
+        correct_heads = [1 if gold_head == pred_head else 0 for gold_head, pred_head in zip(gold_heads, predicted_heads)]
+        uas = sum(correct_heads) / len(correct_heads)
+
+        # LAS
         # correct_labels = [1 if gold_label == pred_label else 0 for gold_label, pred_label in zip(gold_labels, predicted_labels)]
         # uas = sum(correct_labels) / len(correct_labels)
 
-        return las
+        return uas
     
 
     else:
