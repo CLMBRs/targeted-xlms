@@ -385,8 +385,9 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
             _, preds = torch.topk(output, k=1, dim=-1)
 
             #account for 0-d
-            gold_heads.extend([head.item() if head.dim() == 0 else head for sentence in labels for head in sentence])
-            predicted_heads.extend([head.item() if head.dim() == 0 else head for sentence in preds for head in sentence])
+            gold_heads.extend([head.item() if head.dim() == 0 else int(head) for sentence in labels for head in sentence])
+
+            predicted_heads.extend([head.item() if head.dim() == 0 else int(head) for sentence in preds for head in sentence])
 
 
             gold_labels.extend([label.item() for sentence in labels for label in sentence])
