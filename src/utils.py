@@ -43,7 +43,8 @@ _label_spaces = {
     #ner documentation: https://huggingface.co/datasets/wikiann
     'ner': [x for x in range(7)],
     #uas tag: xlmr max sequence length
-    "uas": [x for x in range(256+1)] #root is 0 and word_id can be 1 to 256
+    "uas": [x for x in range(256+1)], #root is 0 and word_id can be 1 to 256
+    #las documentation: https://universaldependencies.org/u/dep/all.html
     }
 
 _xlmr_special_tokens = ['<s>', '</s>', '<unk>', '<pad>', '<mask>']
@@ -89,7 +90,7 @@ def load_hf_model(model_type, model_name, task='ppl', random_weights=False, toke
 
 def _load_word_level_ud(file_path, task="pos"): #task options pos and uas
     dataset = []
-
+    ignored_word_count = 0
     example_sent = []
     example_labels = []
     with open(file_path, 'r') as f:
@@ -109,15 +110,20 @@ def _load_word_level_ud(file_path, task="pos"): #task options pos and uas
                 # annotated (weird for tokenization but ¯\_(ツ)_/¯)
                 if '-' in idx:
                     continue
+                if '_' in head and task == 'uas': #extra appended word with no head
+                    ignored_word_count += 1
+                    continue
                 # if idx == 1: assert len(example) == 0
 
                 #using upos for part of speech task instead of xpos
                 label = upos
-                if task=="uas":
-                    label=int(head)
+                if task=="uas": #for uas label is head
+                    label=int(head)    
 
                 example_sent.append(word)
                 example_labels.append(label)
+    if ignored_word_count>0:
+        print("For file:", file_path, " words without a head:", ignored_word_count)
 
     if len(example_sent) > 0:
         dataset.append((example_sent, example_labels))
