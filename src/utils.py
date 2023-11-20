@@ -117,8 +117,13 @@ def _load_word_level_ud(file_path, task="pos"): #task options pos and uas
 
                 #using upos for part of speech task instead of xpos
                 label = upos
+<<<<<<< HEAD
                 if task=="uas": #for uas label is head
                     label=int(head)    
+=======
+                if task == "uas":
+                    label = int(head) if head != '_' else None
+>>>>>>> 45d2b770edb528615dc68056e5c8390b2cc19202
 
                 example_sent.append(word)
                 example_labels.append(label)
