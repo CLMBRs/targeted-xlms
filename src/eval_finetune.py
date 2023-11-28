@@ -371,41 +371,35 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
         
         #To add:LAS
     elif metric == 'uas':
-        gold_heads, gold_labels = [], []
-        predicted_heads, predicted_labels = [], []
+        num_correct_arcs = 0
+        total_arcs = 0
 
         for i in range(0, len(data), bsz):
             if i + bsz > len(data):
                 batch_data = data[i:]
             else:
                 batch_data = data[i:i + bsz]
-            input_ids, alignments, labels = batchify(batch_data, pad_idx)
-
+            input_ids, alignments, _ = batchify(batch_data, pad_idx)
+    
             input_ids = input_ids.to('cuda:0')
-            labels = labels.to('cuda:0')
-
+    
             with torch.no_grad():
                 output = model.forward(input_ids, alignments)
-            _, preds = torch.topk(output, k=1, dim=-1)
-
-            #account for 0-d
-            gold_heads.extend([head.item() if head.dim() == 0 else int(head) for sentence in labels for head in sentence])
-
-            predicted_heads.extend([head.item() if head.dim() == 0 else int(head) for sentence in preds for head in sentence])
-
-
-            gold_labels.extend([label.item() for sentence in labels for label in sentence])
-            predicted_labels.extend([label.item() for sentence in preds for label in sentence])
-
-        # UAS
-        correct_heads = [1 if gold_head == pred_head else 0 for gold_head, pred_head in zip(gold_heads, predicted_heads)]
-        uas = sum(correct_heads) / len(correct_heads)
-
-        # LAS
-        # correct_labels = [1 if gold_label == pred_label else 0 for gold_label, pred_label in zip(gold_labels, predicted_labels)]
-        # uas = sum(correct_labels) / len(correct_labels)
-
-        return uas
+    
+            # Extract predicted arcs
+            _, preds = torch.max(output, dim=-1)
+            preds = preds.cpu().numpy()
+    
+            # Calculate correct arcs
+            for i, arc_indices in enumerate(alignments):
+                for j, head in enumerate(arc_indices):
+                    if head != -1:  # Skip padding tokens
+                        total_arcs += 1
+                        if preds[i][j] == head:
+                            num_correct_arcs += 1
+    
+        return num_correct_arcs / total_arcs
+            
     
 
     else:
