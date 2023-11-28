@@ -65,26 +65,30 @@ class Dependency_Tagger(torch.nn.Module):
         self.encoder = copy.deepcopy(encoder)
         input_dim = self.encoder.encoder.layer[-1].output.dense.out_features # (seq len)
         mlp_size = int(input_dim / 2)
-        self.mlp_layer = torch.nn.Linear(input_dim, mlp_size)
-
+        self.head_mlp_layer = torch.nn.Linear(input_dim, mlp_size)
+        self.dep_mlp_layer = torch.nn.Linear(input_dim, mlp_size)
         self.linear_weight = torch.nn.Linear(mlp_size, mlp_size, bias = False)
         self.linear_bias = torch.nn.Linear(mlp_size, 1, bias = False)
 
     def forward(self, input_ids, alignments):
         # run through encoder
         embed = self.encoder(input_ids).last_hidden_state
-
         # get single rep for each word
         feats = []
         for i in range(embed.shape[0]):
-            feats.extend(_consolidate_features(embed[i], alignments[i]))
-        head_embed = self.mlp_layer(torch.cat(feats, dim=0)) #(seq len,1) & (seq len, mlp)->(seq len,mlp_size)
-        child_embed = self.mlp_layer(torch.cat(feats, dim=0)) #(seq len,mlp_size)
+            feat = torch.stack(_consolidate_features(embed[i], alignments[i]),dim=1) #(1,seq len,hidden_dim)
+            feats.append(feat) #seq len, hidden_dim
 
-        partial_weight_mul = self.linear_weight(head_embed) # (seq len, mlp_size)
-        biaffine_score = torch.matmul(child_embed,partial_weight_mul.transpose(0,1)) + self.linear_bias(head_embed) #(seq len,seq len)+(seq len,1)
-        output = F.softmax(biaffine_score, dim=-1) #(seq len,seq len)
-        return output
+        outputs = []
+        for feat in feats: #(1,seq len,hidden_dim)
+            head_embed = self.head_mlp_layer(feat) #(1,seq len,hidden_dim) & (seq len, mlp)->(1,seq len,mlp_size)
+            child_embed = self.dep_mlp_layer(feat) #(1,seq len,mlp_size)
+
+            partial_weight_mul = self.linear_weight(head_embed) # (1,seq len, mlp_size)
+            biaffine_score = torch.bmm(child_embed,partial_weight_mul.transpose(1,2)) + self.linear_bias(head_embed) #(1,seq len,seq len)+(1,seq len,1)
+            output = F.softmax(biaffine_score, dim=-1) #(1,seq len,seq len)
+            outputs.append(output)
+        return outputs
 
 def whitespace_to_sentencepiece(tokenizer, dataset, label_space, max_seq_length=512, layer_id=-1):
     """
@@ -384,21 +388,24 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
                 output = model.forward(input_ids, alignments)
             _, preds = torch.topk(output, k=1, dim=-1)
 
-            gold_heads.extend([head.item() for sentence in labels for head in sentence])
-            predicted_heads.extend([head.item() for sentence in preds for head in sentence])
+            #account for 0-d
+            gold_heads.extend([head.item() if head.dim() == 0 else int(head) for sentence in labels for head in sentence])
+
+            predicted_heads.extend([head.item() if head.dim() == 0 else int(head) for sentence in preds for head in sentence])
+
 
             gold_labels.extend([label.item() for sentence in labels for label in sentence])
             predicted_labels.extend([label.item() for sentence in preds for label in sentence])
 
-        # LAS
-        correct_heads = [1 if gold_head == pred_head else 0 for gold_head, pred_head in zip(gold_heads, predicted_heads)]
-        las = sum(correct_heads) / len(correct_heads)
-
         # UAS
+        correct_heads = [1 if gold_head == pred_head else 0 for gold_head, pred_head in zip(gold_heads, predicted_heads)]
+        uas = sum(correct_heads) / len(correct_heads)
+
+        # LAS
         # correct_labels = [1 if gold_label == pred_label else 0 for gold_label, pred_label in zip(gold_labels, predicted_labels)]
         # uas = sum(correct_labels) / len(correct_labels)
 
-        return las
+        return uas
     
 
     else:
