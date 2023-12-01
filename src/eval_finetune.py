@@ -266,6 +266,32 @@ def train_model(
                 class_weights = torch.ones(7, device='cuda:0')
                 class_weights[0] = O_lambda
                 loss = torch.nn.functional.cross_entropy(output, labels, weight=class_weights)
+            elif task == "uas":
+                # Initialize the total loss
+                losses = []
+                weights = []
+                offset=0 #offset to map output examples to labels
+
+                # Iterate over the list of tensors and calculate the loss for each pair
+                for i in range(len(output)):
+                    output_i = output[i].squeeze(dim=0) #get rid of empty batch dim
+
+                    # Assuming output_i and labels[i] are the tensors for the i-th example
+                    print('current output size and current offset:', output_i.size(),offset, file=sys.stderr)
+                    example_len = output_i.size(dim=-1)
+                    print("target len:", offset, example_len,file=sys.stderr)
+                    loss = torch.nn.functional.cross_entropy(torch.atleast_1d(output_i), labels[offset:offset+example_len], reduction="sum")
+
+                    #track batch metrics
+                    losses.append(loss)
+                    weights.append(example_len)
+                    offset += example_len
+
+                # Calculate the weighted average loss
+                weight_sum = sum(weights)
+                weights = [w/weight_sum for w in weights]
+                average_loss = sum([w*l for w,l in zip(weights, losses)]) / len(losses)
+                #print("loss in a batch:", average_loss, file=sys.stderr)
             else:
                 loss = criterion(output, labels)
             if torch.isnan(loss):
