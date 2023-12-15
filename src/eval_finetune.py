@@ -64,11 +64,10 @@ class Dependency_Tagger(torch.nn.Module):
 
         self.encoder = copy.deepcopy(encoder)
         input_dim = self.encoder.encoder.layer[-1].output.dense.out_features # (seq len)
-        mlp_size = int(input_dim / 2)
-        self.head_mlp_layer = torch.nn.Linear(input_dim, mlp_size)
-        self.dep_mlp_layer = torch.nn.Linear(input_dim, mlp_size)
-        self.linear_weight = torch.nn.Linear(mlp_size, mlp_size, bias = False)
-        self.linear_bias = torch.nn.Linear(mlp_size, 1, bias = False)
+        self.head_layer = torch.nn.Linear(input_dim, output_dim)
+        self.dep_layer = torch.nn.Linear(input_dim, output_dim)
+        self.linear_weight = torch.nn.Linear(output_dim, output_dim, bias = False)
+        self.linear_bias = torch.nn.Linear(output_dim, 1, bias = False)
 
     def forward(self, input_ids, alignments):
         # run through encoder
@@ -76,18 +75,21 @@ class Dependency_Tagger(torch.nn.Module):
         # get single rep for each word
         feats = []
         for i in range(embed.shape[0]):
-            feat = torch.stack(_consolidate_features(embed[i], alignments[i]),dim=1) #(1,seq len,hidden_dim)
+            feat = torch.stack(_consolidate_features(embed[i], alignments[i]),dim=1) #(batch,seq len,hidden_dim)
             feats.append(feat) #seq len, hidden_dim
 
         outputs = []
-        for feat in feats: #(1,seq len,hidden_dim)
-            head_embed = self.head_mlp_layer(feat) #(1,seq len,hidden_dim) & (seq len, mlp)->(1,seq len,mlp_size)
-            child_embed = self.dep_mlp_layer(feat) #(1,seq len,mlp_size)
+        for feat in feats: # (1,seq len,hidden_dim)
+            head_embed = self.head_layer(feat) # (1,seq len,hidden_dim) & (hidden_dim, output)->(1,seq,output)
+            dep_embed = self.dep_layer(feat) # (1,seq len,output_dim)
 
-            partial_weight_mul = self.linear_weight(head_embed) # (1,seq len, mlp_size)
-            biaffine_score = torch.bmm(child_embed,partial_weight_mul.transpose(1,2)) + self.linear_bias(head_embed) #(1,seq len,seq len)+(1,seq len,1)
-            output = F.softmax(biaffine_score, dim=-1) #(1,seq len,seq len)
-            outputs.append(output)
+            partial_weight_mul = self.linear_weight(head_embed) # (1,seq len, output)
+            weight = torch.bmm(dep_embed,partial_weight_mul.transpose(1,2)) # (1, seq len, seq len)
+            bias = self.linear_bias(head_embed) # (1, seq len, 1)
+            biaffine_score = weight + bias # (1,seq len,seq len)
+            #output = F.softmax(biaffine_score, dim=-1) #(1,seq len,seq len)
+            outputs.append(biaffine_score)
+            #print("intermediate outputs:\n",weight, bias, biaffine_score, file=sys.stderr)
         return outputs
 
 def whitespace_to_sentencepiece(tokenizer, dataset, label_space, max_seq_length=512, layer_id=-1):
