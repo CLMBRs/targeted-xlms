@@ -101,6 +101,9 @@ def _load_word_level_ud(file_path, task="pos"): #task options pos and uas
             if len(line) == 0:
                 # Make sure not to append blank example after more than one blank line
                 if len(example_sent) > 0:
+                    if task=='uas':
+                        example_sent.insert(0,'<s>') #adding cls token as the root node
+                        example_labels.insert(0, 0) #head of root node is root itself?
                     dataset.append((example_sent, example_labels))
                 example_sent = []
                 example_labels = []

@@ -87,9 +87,8 @@ class Dependency_Tagger(torch.nn.Module):
             weight = torch.bmm(dep_embed,partial_weight_mul.transpose(1,2)) # (1, seq len, seq len)
             bias = self.linear_bias(head_embed) # (1, seq len, 1)
             biaffine_score = weight + bias # (1,seq len,seq len)
-            #output = F.softmax(biaffine_score, dim=-1) #(1,seq len,seq len)
-            outputs.append(biaffine_score)
-            #print("intermediate outputs:\n",weight, bias, biaffine_score, file=sys.stderr)
+            output = F.softmax(biaffine_score, dim=-1) #(1,seq len,seq len)
+            outputs.append(output)
         return outputs
 
 def whitespace_to_sentencepiece(tokenizer, dataset, label_space, max_seq_length=512, layer_id=-1):
@@ -279,9 +278,7 @@ def train_model(
                     output_i = output[i].squeeze(dim=0) #get rid of empty batch dim
 
                     # Assuming output_i and labels[i] are the tensors for the i-th example
-                    print('current output size and current offset:', output_i.size(),offset, file=sys.stderr)
                     example_len = output_i.size(dim=-1)
-                    print("target len:", offset, example_len,file=sys.stderr)
                     loss = torch.nn.functional.cross_entropy(torch.atleast_1d(output_i), labels[offset:offset+example_len], reduction="sum")
 
                     #track batch metrics
