@@ -290,7 +290,7 @@ def train_model(
                 weight_sum = sum(weights)
                 weights = [w/weight_sum for w in weights]
                 average_loss = sum([w*l for w,l in zip(weights, losses)]) / len(losses)
-                #print("loss in a batch:", average_loss, file=sys.stderr)
+                print("Loss in a batch:", average_loss, file=sys.stderr)
             else:
                 loss = criterion(output, labels)
             if torch.isnan(loss):
@@ -404,7 +404,7 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
                 batch_data = data[i:]
             else:
                 batch_data = data[i:i + bsz]
-            input_ids, alignments, _ = batchify(batch_data, pad_idx)
+            input_ids, alignments, labels = batchify(batch_data, pad_idx)
     
             input_ids = input_ids.to('cuda:0')
     
@@ -412,17 +412,20 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
                 output = model.forward(input_ids, alignments)
     
             # Extract predicted arcs
-            _, preds = torch.max(output, dim=-1)
-            preds = preds.cpu().numpy()
+            predictions = []
+            for op in output: #op shape (1, seq_len, seq_len)
+                _, preds = torch.max(op, dim=-1) 
+                preds = preds.cpu().numpy() # shape (1, seq_len)
+                predictions.append(preds)
+            predictions = np.squeeze(np.concatenate(predictions, axis=1))
     
             # Calculate correct arcs
-            for i, arc_indices in enumerate(alignments):
-                for j, head in enumerate(arc_indices):
-                    if head != -1:  # Skip padding tokens
-                        total_arcs += 1
-                        if preds[i][j] == head:
-                            num_correct_arcs += 1
-    
+            for i, pred in enumerate(predictions):
+                if pred == labels[i]:
+                    num_correct_arcs += 1
+            total_arcs += labels.shape[0]
+        print("Correct tokens:", num_correct_arcs, "Total tokens:", total_arcs, file=sys.stderr)
+        print("Total UAS score:", str(num_correct_arcs / total_arcs), file=sys.stderr)
         return num_correct_arcs / total_arcs
             
     
