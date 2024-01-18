@@ -77,7 +77,7 @@ class Dependency_Tagger(torch.nn.Module):
         for i in range(embed.shape[0]):
             feat = torch.stack(_consolidate_features(embed[i], alignments[i]),dim=1) #(batch,seq len,hidden_dim)
             feats.append(feat) #seq len, hidden_dim
-
+        #based on biaffine parser in Dozat and Manning 2017
         outputs = []
         for feat in feats: # (1,seq len,hidden_dim)
             head_embed = self.head_layer(feat) # (1,seq len,hidden_dim) & (hidden_dim, output)->(1,seq,output)
@@ -268,7 +268,7 @@ def train_model(
                 class_weights[0] = O_lambda
                 loss = torch.nn.functional.cross_entropy(output, labels, weight=class_weights)
             elif task == "uas":
-                # Initialize the total loss
+                # Initialize list of losses and weights for each example of loss (seq len)
                 losses = []
                 weights = []
                 offset=0 #offset to map output examples to labels
@@ -276,8 +276,8 @@ def train_model(
                 # Iterate over the list of tensors and calculate the loss for each pair
                 for i in range(len(output)):
                     output_i = output[i].squeeze(dim=0) #get rid of empty batch dim
-
-                    # Assuming output_i and labels[i] are the tensors for the i-th example
+                    # output_i dim: (seq_len, seq_len); output[i] dim: (1,seq_len, seq_len)
+                    # Assuming output_i and labels[offset:offset+example_len] are the tensors for the i-th example
                     example_len = output_i.size(dim=-1)
                     loss = torch.nn.functional.cross_entropy(torch.atleast_1d(output_i), labels[offset:offset+example_len], reduction="sum")
 
@@ -291,7 +291,7 @@ def train_model(
                 weights = [w/weight_sum for w in weights]
                 average_loss = sum([w*l for w,l in zip(weights, losses)]) / len(losses)
                 print("Loss in a batch:", average_loss, file=sys.stderr)
-            else:
+            else: # for task: pos
                 loss = criterion(output, labels)
             if torch.isnan(loss):
                 raise RuntimeError(f"NaN loss detected: epoch {epoch_id + 1}")
@@ -417,6 +417,7 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
                 _, preds = torch.max(op, dim=-1) 
                 preds = preds.cpu().numpy() # shape (1, seq_len)
                 predictions.append(preds)
+            # storing all predictions in a 1-d numpy array
             predictions = np.squeeze(np.concatenate(predictions, axis=1))
     
             # Calculate correct arcs
