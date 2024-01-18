@@ -289,8 +289,8 @@ def train_model(
                 # Calculate the weighted average loss
                 weight_sum = sum(weights)
                 weights = [w/weight_sum for w in weights]
-                average_loss = sum([w*l for w,l in zip(weights, losses)]) / len(losses)
-                print("Loss in a batch:", average_loss, file=sys.stderr)
+                loss = sum([w*l for w,l in zip(weights, losses)]) / len(losses) #average loss of all elements in a batch
+                print("Loss in a batch:", loss, file=sys.stderr)
             else: # for task: pos
                 loss = criterion(output, labels)
             if torch.isnan(loss):
