@@ -55,9 +55,10 @@ class Tagger(torch.nn.Module):
     
 class Dependency_Tagger(torch.nn.Module):
     """
-    Tagger class for conducting classification with a pre-trained model. Takes in the pre-trained
-    model as the `encoder` argument on initialization. The tagger/classification-head itself
-    consists of a single linear layer + softmax
+    Dependency Tagger class for conducting classification with a pre-trained model. Takes in the pre-trained
+    model as the `encoder` argument on initialization. The encoder argument is then represented as 
+    one head and one dependent using a Linear layer. The tagger/classification-head itself consists of one weight
+    and one bias layer based on cite:`Dozat and Manning (2017)`
     """
     def __init__(self, encoder, output_dim):
         super(Dependency_Tagger, self).__init__()
@@ -75,19 +76,20 @@ class Dependency_Tagger(torch.nn.Module):
         # get single rep for each word
         feats = []
         for i in range(embed.shape[0]):
-            feat = torch.stack(_consolidate_features(embed[i], alignments[i]),dim=1) #(batch,seq len,hidden_dim)
-            feats.append(feat) #seq len, hidden_dim
-        #based on biaffine parser in Dozat and Manning 2017
+            feat = torch.stack(_consolidate_features(embed[i], alignments[i]),dim=1) #(1,seq len,hidden_dim)
+            feats.append(feat) # list of (1, seq len, hidden_dim)
+        
         outputs = []
-        for feat in feats: # (1,seq len,hidden_dim)
-            head_embed = self.head_layer(feat) # (1,seq len,hidden_dim) & (hidden_dim, output)->(1,seq,output)
-            dep_embed = self.dep_layer(feat) # (1,seq len,output_dim)
+        for feat in feats: 
+            feat = feat.squeeze(dim=0) # (seq len, hidden_dim)
+            head_embed = self.head_layer(feat) # (seq len,hidden_dim) & (hidden_dim, output)->(seq,output)
+            dep_embed = self.dep_layer(feat) # (seq len,output_dim)
 
-            partial_weight_mul = self.linear_weight(head_embed) # (1,seq len, output)
-            weight = torch.bmm(dep_embed,partial_weight_mul.transpose(1,2)) # (1, seq len, seq len)
-            bias = self.linear_bias(head_embed) # (1, seq len, 1)
-            biaffine_score = weight + bias # (1,seq len,seq len)
-            output = F.softmax(biaffine_score, dim=-1) #(1,seq len,seq len)
+            partial_weight_mul = self.linear_weight(head_embed) # (seq len, output)
+            weight = torch.matmul(dep_embed,partial_weight_mul.transpose(0,1)) # (seq len, seq len)
+            bias = self.linear_bias(head_embed) # (seq len, 1)
+            biaffine_score = weight + bias # (seq len,seq len)
+            output = F.softmax(biaffine_score, dim=-1) #(seq len,seq len)
             outputs.append(output)
         return outputs
 
@@ -271,15 +273,15 @@ def train_model(
                 # Initialize list of losses and weights for each example of loss (seq len)
                 losses = []
                 weights = []
-                offset=0 #offset to map output examples to labels
+                # offset to map output examples to labels
+                offset=0 
 
                 # Iterate over the list of tensors and calculate the loss for each pair
                 for i in range(len(output)):
-                    output_i = output[i].squeeze(dim=0) #get rid of empty batch dim
-                    # output_i dim: (seq_len, seq_len); output[i] dim: (1,seq_len, seq_len)
-                    # Assuming output_i and labels[offset:offset+example_len] are the tensors for the i-th example
-                    example_len = output_i.size(dim=-1)
-                    loss = torch.nn.functional.cross_entropy(torch.atleast_1d(output_i), labels[offset:offset+example_len], reduction="sum")
+                    # output[i] dim: (seq_len, seq_len)
+                    # Assuming output[i] and labels[offset:offset+example_len] are the tensors for the i-th example
+                    example_len = output[i].size(dim=-1)
+                    loss = torch.nn.functional.cross_entropy(output[i], labels[offset:offset+example_len], reduction="sum")
 
                     #track batch metrics
                     losses.append(loss)
@@ -289,8 +291,9 @@ def train_model(
                 # Calculate the weighted average loss
                 weight_sum = sum(weights)
                 weights = [w/weight_sum for w in weights]
-                loss = sum([w*l for w,l in zip(weights, losses)]) / len(losses) #average loss of all elements in a batch
-                print("Loss in a batch:", loss, file=sys.stderr)
+                # average loss of all elements in a batch
+                loss = sum([w*l for w,l in zip(weights, losses)]) / len(losses) 
+                
             else: # for task: pos
                 loss = criterion(output, labels)
             if torch.isnan(loss):
@@ -413,12 +416,12 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
     
             # Extract predicted arcs
             predictions = []
-            for op in output: #op shape (1, seq_len, seq_len)
+            for op in output: #op shape (seq_len, seq_len)
                 _, preds = torch.max(op, dim=-1) 
-                preds = preds.cpu().numpy() # shape (1, seq_len)
+                preds = preds.cpu().numpy() # shape (seq_len)
                 predictions.append(preds)
             # storing all predictions in a 1-d numpy array
-            predictions = np.squeeze(np.concatenate(predictions, axis=1))
+            predictions = np.concatenate(predictions)
     
             # Calculate correct arcs
             for i, pred in enumerate(predictions):
