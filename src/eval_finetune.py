@@ -401,6 +401,7 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
     elif metric == 'uas':
         num_correct_arcs = 0
         total_arcs = 0
+        ignore_tokens = 0
 
         for i in range(0, len(data), bsz):
             if i + bsz > len(data):
@@ -425,9 +426,12 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
     
             # Calculate correct arcs
             for i, pred in enumerate(predictions):
+                if labels[i] == -100:
+                    ignore_tokens += 1
                 if pred == labels[i]:
                     num_correct_arcs += 1
             total_arcs += labels.shape[0]
+        total_arcs = total_arcs - ignore_tokens
         print("Correct tokens:", num_correct_arcs, "Total tokens:", total_arcs, file=sys.stderr)
         print("Total UAS score:", str(num_correct_arcs / total_arcs), file=sys.stderr)
         return num_correct_arcs / total_arcs
