@@ -42,6 +42,20 @@ class CheckpointControlCallback(TrainerCallback):
             train_dataset.save(dataset_save_path)
 
 
+class DetectBrokenLossCallback(TrainerCallback):
+    """
+    Callback to detect if the training loss goes to zero (indicating divergence) and stop training
+    with an error if so
+    """
+    def __init__(self, trainer: Trainer):
+        self.trainer = trainer
+
+    def on_log(
+        self, args: TrainingArguments, state: TrainerState, control: TrainerControl, **kwargs
+    ):
+        if 'loss' in state.log_history[-1] and state.log_history[-1]['loss'] <= 0.0:
+            raise RuntimeError("Training loss dropped to zero, indicating divergence")
+
 class InitialFreezeCallback(TrainerCallback):
     """
     Callback to freeze some model parameters at the beginning of training. The parameter
@@ -268,6 +282,8 @@ if __name__ == "__main__":
 
     checkpoint_callback = CheckpointControlCallback(trainer, args.checkpoints_directory)
     trainer.add_callback(checkpoint_callback)
+    broken_loss_callback = DetectBrokenLossCallback(trainer)
+    trainer.add_callback(broken_loss_callback)
 
     if getattr(args, 'early_stopping_patience', False):
         early_stopping_callback = EarlyStoppingCallback(
