@@ -20,7 +20,8 @@ from utils import (
 
 _loader_functions_by_task = {
     'pos': load_ud_splits,
-    'ner': load_ner_splits
+    'ner': load_ner_splits,
+    'uas': load_ud_splits
 }
 
 
@@ -51,7 +52,46 @@ class Tagger(torch.nn.Module):
         output = self.proj(output)
         output = F.softmax(output, dim=-1)
         return output
+    
+class Dependency_Tagger(torch.nn.Module):
+    """
+    Dependency Tagger class for conducting classification with a pre-trained model. Takes in the pre-trained
+    model as the `encoder` argument on initialization. The encoder argument is then represented as 
+    one head and one dependent using a Linear layer. The tagger/classification-head itself consists of one weight
+    and one bias layer based on cite:`Dozat and Manning (2017)`
+    """
+    def __init__(self, encoder, output_dim):
+        super(Dependency_Tagger, self).__init__()
 
+        self.encoder = copy.deepcopy(encoder)
+        input_dim = self.encoder.encoder.layer[-1].output.dense.out_features # (seq len)
+        self.head_layer = torch.nn.Linear(input_dim, output_dim)
+        self.dep_layer = torch.nn.Linear(input_dim, output_dim)
+        self.linear_weight = torch.nn.Linear(output_dim, output_dim, bias = False)
+        self.linear_bias = torch.nn.Linear(output_dim, 1, bias = False)
+
+    def forward(self, input_ids, alignments):
+        # run through encoder
+        embed = self.encoder(input_ids).last_hidden_state
+        # get single rep for each word
+        feats = []
+        for i in range(embed.shape[0]):
+            feat = torch.stack(_consolidate_features(embed[i], alignments[i]),dim=1) #(1,seq len,hidden_dim)
+            feats.append(feat) # list of (1, seq len, hidden_dim)
+        
+        outputs = []
+        for feat in feats: 
+            feat = feat.squeeze(dim=0) # (seq len, hidden_dim)
+            head_embed = self.head_layer(feat) # (seq len,hidden_dim) & (hidden_dim, output)->(seq,output)
+            dep_embed = self.dep_layer(feat) # (seq len,output_dim)
+
+            partial_weight_mul = self.linear_weight(head_embed) # (seq len, output)
+            weight = torch.matmul(dep_embed,partial_weight_mul.transpose(0,1)) # (seq len, seq len)
+            bias = self.linear_bias(head_embed) # (seq len, 1)
+            biaffine_score = weight + bias # (seq len,seq len)
+            output = F.softmax(biaffine_score, dim=-1) #(seq len,seq len)
+            outputs.append(output)
+        return outputs
 
 def whitespace_to_sentencepiece(tokenizer, dataset, label_space, max_seq_length=512, layer_id=-1):
     """
@@ -229,7 +269,32 @@ def train_model(
                 class_weights = torch.ones(7, device='cuda:0')
                 class_weights[0] = O_lambda
                 loss = torch.nn.functional.cross_entropy(output, labels, weight=class_weights)
-            else:
+            elif task == "uas":
+                # Initialize list of losses and weights for each example of loss (seq len)
+                losses = []
+                weights = []
+                # offset to map output examples to labels
+                offset=0 
+
+                # Iterate over the list of tensors and calculate the loss for each pair
+                for i in range(len(output)):
+                    # output[i] dim: (seq_len, seq_len)
+                    # Assuming output[i] and labels[offset:offset+example_len] are the tensors for the i-th example
+                    example_len = output[i].size(dim=-1)
+                    loss = torch.nn.functional.cross_entropy(output[i], labels[offset:offset+example_len], reduction="sum")
+
+                    #track batch metrics
+                    losses.append(loss)
+                    weights.append(example_len)
+                    offset += example_len
+
+                # Calculate the weighted average loss
+                weight_sum = sum(weights)
+                weights = [w/weight_sum for w in weights]
+                # average loss of all elements in a batch
+                loss = sum([w*l for w,l in zip(weights, losses)]) / len(losses) 
+                
+            else: # for task: pos
                 loss = criterion(output, labels)
             if torch.isnan(loss):
                 raise RuntimeError(f"NaN loss detected: epoch {epoch_id + 1}")
@@ -331,6 +396,47 @@ def evaluate_model(model, data, pad_idx, bsz=1, metric='acc'):
             predicted.append([int2tag[x] for x in preds])
 
         return f1_score(true, predicted)
+        
+        #To add:LAS
+    elif metric == 'uas':
+        num_correct_arcs = 0
+        total_arcs = 0
+        ignore_tokens = 0
+
+        for i in range(0, len(data), bsz):
+            if i + bsz > len(data):
+                batch_data = data[i:]
+            else:
+                batch_data = data[i:i + bsz]
+            input_ids, alignments, labels = batchify(batch_data, pad_idx)
+    
+            input_ids = input_ids.to('cuda:0')
+    
+            with torch.no_grad():
+                output = model.forward(input_ids, alignments)
+    
+            # Extract predicted arcs
+            predictions = []
+            for op in output: #op shape (seq_len, seq_len)
+                _, preds = torch.max(op, dim=-1) 
+                preds = preds.cpu().numpy() # shape (seq_len)
+                predictions.append(preds)
+            # storing all predictions in a 1-d numpy array
+            predictions = np.concatenate(predictions)
+    
+            # Calculate correct arcs
+            for i, pred in enumerate(predictions):
+                if labels[i] == -100:
+                    ignore_tokens += 1
+                if pred == labels[i]:
+                    num_correct_arcs += 1
+            total_arcs += labels.shape[0]
+        total_arcs = total_arcs - ignore_tokens
+        print("Correct tokens:", num_correct_arcs, "Total tokens:", total_arcs, file=sys.stderr)
+        print("Total UAS score:", str(num_correct_arcs / total_arcs), file=sys.stderr)
+        return num_correct_arcs / total_arcs
+            
+    
 
     else:
         raise Exception(f'Evaluation metric not recognized: {metric}')
@@ -422,12 +528,12 @@ def finetune_classification(
     # the test set for each of the languages in `args.langs`. Pre-process the data
     if do_zero_shot:
         train_valid_data = split_loader_function(
-            data_path, args.transfer_source, splits=['train', 'dev']
+            data_path, args.transfer_source, splits=['train', 'dev'], task=task
         )
         train_text_data = train_valid_data['train']
         valid_text_data = train_valid_data['dev']
         test_text_data = {
-            lg: split_loader_function(data_path, lg, splits=['test'])
+            lg: split_loader_function(data_path, lg, splits=['test'], task=task)
             for lg in args.langs
         }
 
@@ -452,7 +558,7 @@ def finetune_classification(
         print("########")
         print(f"Beginning {task.upper()} evaluation for {lang}")
         # load train and eval data for probing on given langauge
-        data_splits = split_loader_function(data_path, lang)
+        data_splits = split_loader_function(data_path, lang, task=task)
         train_text_data, valid_text_data, test_text_data = [
             data_splits[x] for x in ['train', 'dev', 'test']
         ]
@@ -502,7 +608,10 @@ def finetune_classification(
             training_complete = False
 
         # create probe model
-        tagger = Tagger(model, len(task_labels))
+        if task=="uas":
+            tagger = Dependency_Tagger(model, len(task_labels))
+        else:
+            tagger = Tagger(model, len(task_labels))
         tagger_bsz = args.batch_size
 
         # only do training if we can't retrieve the existing checkpoint
@@ -710,7 +819,15 @@ if __name__ == "__main__":
     args.learning_rate = getattr(args, 'learning_rate', float('5.0e-6'))
     args.max_grad_norm = getattr(args, 'max_grad_norm', 1.0)
 
-    args.eval_metric = 'ner_f1' if args.task == 'ner' else 'acc'
+    #args.eval_metric = 'ner_f1' if args.task == 'ner' else 'acc'
+    #account for task = uas
+    if args.task == 'ner':
+        args.eval_metric = 'ner_f1'
+    elif args.task == 'uas':
+        args.eval_metric = 'uas'
+    else:
+        args.eval_metric = 'acc'
+
 
     # ensure that given lang matches given task
     #for lang in args.langs:
