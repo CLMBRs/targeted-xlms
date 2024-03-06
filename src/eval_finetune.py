@@ -53,15 +53,15 @@ class Tagger(torch.nn.Module):
         output = F.softmax(output, dim=-1)
         return output
     
-class Dependency_Tagger(torch.nn.Module):
+class DependencyTagger(torch.nn.Module):
     """
-    Dependency Tagger class for conducting classification with a pre-trained model. Takes in the pre-trained
-    model as the `encoder` argument on initialization. The encoder argument is then represented as 
-    one head and one dependent using a Linear layer. The tagger/classification-head itself consists of one weight
-    and one bias layer based on cite:`Dozat and Manning (2017)`
+    Dependency Tagger class for conducting classification with a pre-trained model. Takes in the
+    pre-trained model as the `encoder` argument on initialization. The encoder argument is then
+    represented as one head and one dependent using a Linear layer. The tagger/classification-head
+    itself consists of one weight and one bias layer based on cite:`Dozat and Manning (2017)`
     """
     def __init__(self, encoder, output_dim):
-        super(Dependency_Tagger, self).__init__()
+        super(DependencyTagger, self).__init__()
 
         self.encoder = copy.deepcopy(encoder)
         input_dim = self.encoder.encoder.layer[-1].output.dense.out_features # (seq len)
@@ -279,9 +279,12 @@ def train_model(
                 # Iterate over the list of tensors and calculate the loss for each pair
                 for i in range(len(output)):
                     # output[i] dim: (seq_len, seq_len)
-                    # Assuming output[i] and labels[offset:offset+example_len] are the tensors for the i-th example
+                    # Assuming output[i] and labels[offset:offset+example_len] are the tensors for 
+                    # the i-th example
                     example_len = output[i].size(dim=-1)
-                    loss = torch.nn.functional.cross_entropy(output[i], labels[offset:offset+example_len], reduction="sum")
+                    loss = torch.nn.functional.cross_entropy(
+                        output[i], labels[offset:offset+example_len], reduction="sum"
+                    )
 
                     #track batch metrics
                     losses.append(loss)
@@ -609,7 +612,7 @@ def finetune_classification(
 
         # create probe model
         if task=="uas":
-            tagger = Dependency_Tagger(model, len(task_labels))
+            tagger = DependencyTagger(model, len(task_labels))
         else:
             tagger = Tagger(model, len(task_labels))
         tagger_bsz = args.batch_size
