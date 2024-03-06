@@ -5,6 +5,7 @@ output/running
 tokenizers/
 OpusFilter/
 focus/
+src/focus
 *~
 *.cmd
 .DS_Store
