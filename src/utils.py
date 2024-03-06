@@ -41,7 +41,10 @@ _label_spaces = {
         'NUM', 'PART', 'PRON', 'PROPN', 'PUNCT', 'SCONJ', 'SYM', 'VERB',\
         'X'],
     #ner documentation: https://huggingface.co/datasets/wikiann
-    'ner': [x for x in range(7)]
+    'ner': [x for x in range(7)],
+    #uas tag: xlmr max sequence length
+    "uas": [x for x in range(256+1)], #root is 0 and word_id can be 1 to 256
+    #las documentation: https://universaldependencies.org/u/dep/all.html
     }
 
 _xlmr_special_tokens = ['<s>', '</s>', '<unk>', '<pad>', '<mask>']
@@ -85,9 +88,9 @@ def load_hf_model(model_type, model_name, task='ppl', random_weights=False, toke
     return model, tokenizer
 
 
-def _load_word_level_ud(file_path):
+def _load_word_level_ud(file_path, task="pos"): #task options pos and uas
     dataset = []
-
+    ignored_word_count = 0
     example_sent = []
     example_labels = []
     with open(file_path, 'r') as f:
@@ -98,6 +101,10 @@ def _load_word_level_ud(file_path):
             if len(line) == 0:
                 # Make sure not to append blank example after more than one blank line
                 if len(example_sent) > 0:
+                    if task=='uas':
+                        # Adding cls token as root node and '_' as its label so that it is ignored
+                        example_sent.insert(0,'<s>') 
+                        example_labels.insert(0, '_')
                     dataset.append((example_sent, example_labels))
                 example_sent = []
                 example_labels = []
@@ -107,13 +114,20 @@ def _load_word_level_ud(file_path):
                 # annotated (weird for tokenization but ¯\_(ツ)_/¯)
                 if '-' in idx:
                     continue
+                if '_' in head and task == 'uas': #extra appended word with no head
+                    ignored_word_count += 1
+                    continue
                 # if idx == 1: assert len(example) == 0
 
                 #using upos for part of speech task instead of xpos
                 label = upos
+                if task == "uas":
+                    label = int(head) if head != '_' else None
 
                 example_sent.append(word)
                 example_labels.append(label)
+    if ignored_word_count>0:
+        print("For file:", file_path, " words without a head:", ignored_word_count)
 
     if len(example_sent) > 0:
         dataset.append((example_sent, example_labels))
@@ -135,7 +149,7 @@ def _load_ud_text(file_path):
     return dataset
 
 
-def load_ud_splits(data_path, lang, splits=['train', 'dev', 'test']):
+def load_ud_splits(data_path, lang, splits=['train', 'dev', 'test'], task="pos"): #task can be pos (default) or uas
     ud_files = os.listdir(data_path)
     split_data = {}
     for split_name in splits:
@@ -143,7 +157,7 @@ def load_ud_splits(data_path, lang, splits=['train', 'dev', 'test']):
         assert len(split_file) == 1
         split_file = split_file[0]
         split_path = os.path.join(data_path, split_file)
-        split_data[split_name] = _load_word_level_ud(split_path)
+        split_data[split_name] = _load_word_level_ud(split_path, task=task)
 
     return split_data if len(splits) > 1 else split_data[splits[0]]
 
