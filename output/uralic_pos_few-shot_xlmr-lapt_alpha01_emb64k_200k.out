@@ -1,0 +1,148 @@
+Config file: configs/uralic_pos_few-shot_xlmr-lapt_alpha01_emb64k_200k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+########
+Beginning POS evaluation for myv
+majority label baseline: 24.14
+per word majority baseline: 55.97
+random seed: 1
+num epochs: 62
+accuracy: 72.06
+----
+random seed: 2
+num epochs: 64
+accuracy: 73.42
+----
+random seed: 3
+num epochs: 64
+accuracy: 73.14
+----
+random seed: 4
+num epochs: 64
+accuracy: 77.07
+----
+all trials finished
+mean epochs: 63.5
+mean accuracy: 73.92
+standard deviation: 1.89
+########
+Beginning POS evaluation for sme
+majority label baseline: 22.99
+per word majority baseline: 61.65
+random seed: 1
+num epochs: 60
+accuracy: 70.77
+----
+random seed: 2
+num epochs: 64
+accuracy: 62.87
+----
+random seed: 3
+num epochs: 64
+accuracy: 75.0
+----
+random seed: 4
+num epochs: 64
+accuracy: 70.61
+----
+all trials finished
+mean epochs: 63.0
+mean accuracy: 69.81
+standard deviation: 4.38
+########
+Beginning POS evaluation for et
+majority label baseline: 19.97
+per word majority baseline: 69.37
+random seed: 1
+num epochs: 64
+accuracy: 81.6
+----
+random seed: 2
+num epochs: 64
+accuracy: 84.49
+----
+random seed: 3
+num epochs: 64
+accuracy: 74.4
+----
+random seed: 4
+num epochs: 64
+accuracy: 82.99
+----
+all trials finished
+mean epochs: 64.0
+mean accuracy: 80.87
+standard deviation: 3.87
+########
+Beginning POS evaluation for fi
+majority label baseline: 23.24
+per word majority baseline: 70.78
+random seed: 1
+num epochs: 64
+accuracy: 80.95
+----
+random seed: 2
+num epochs: 64
+accuracy: 84.84
+----
+random seed: 3
+num epochs: 64
+accuracy: 80.14
+----
+random seed: 4
+num epochs: 64
+accuracy: 87.31
+----
+all trials finished
+mean epochs: 64.0
+mean accuracy: 83.31
+standard deviation: 2.91
+########
+Beginning POS evaluation for hu
+majority label baseline: 22.42
+per word majority baseline: 60.37
+random seed: 1
+num epochs: 64
+accuracy: 85.87
+----
+random seed: 2
+num epochs: 64
+accuracy: 89.93
+----
+random seed: 3
+num epochs: 64
+accuracy: 80.32
+----
+random seed: 4
+num epochs: 64
+accuracy: 85.23
+----
+all trials finished
+mean epochs: 64.0
+mean accuracy: 85.34
+standard deviation: 3.41
+########
+Beginning POS evaluation for ru
+majority label baseline: 23.84
+per word majority baseline: 88.62
+random seed: 1
+num epochs: 64
+accuracy: 86.71
+----
+random seed: 2
+num epochs: 64
+accuracy: 86.52
+----
+random seed: 3
+num epochs: 64
+accuracy: 89.92
+----
+random seed: 4
+num epochs: 64
+accuracy: 88.38
+----
+all trials finished
+mean epochs: 64.0
+mean accuracy: 87.88
+standard deviation: 1.38

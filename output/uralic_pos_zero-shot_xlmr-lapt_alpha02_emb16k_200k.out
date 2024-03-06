@@ -1,0 +1,49 @@
+Config file: configs/uralic_pos_zero-shot_xlmr-lapt_alpha02_emb16k_200k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+Doing zero-shot transfer from source uralic to languages kpv, krl, mdf, olo, sms
+random seed: 1
+num epochs: 64
+kpv accuracy: 74.03
+krl accuracy: 86.65
+mdf accuracy: 75.15
+olo accuracy: 82.86
+sms accuracy: 54.18
+----
+random seed: 2
+num epochs: 62
+kpv accuracy: 73.9
+krl accuracy: 86.49
+mdf accuracy: 74.74
+olo accuracy: 83.8
+sms accuracy: 55.11
+----
+random seed: 3
+num epochs: 64
+kpv accuracy: 73.82
+krl accuracy: 86.3
+mdf accuracy: 74.22
+olo accuracy: 83.4
+sms accuracy: 54.11
+----
+random seed: 4
+num epochs: 64
+kpv accuracy: 74.7
+krl accuracy: 86.85
+mdf accuracy: 74.49
+olo accuracy: 83.94
+sms accuracy: 54.14
+----
+all trials finished
+mean epochs: 63.5
+kpv mean accuracy: 74.11
+kpv standard deviation: 0.35
+krl mean accuracy: 86.57
+krl standard deviation: 0.2
+mdf mean accuracy: 74.65
+mdf standard deviation: 0.34
+olo mean accuracy: 83.5
+olo standard deviation: 0.42
+sms mean accuracy: 54.39
+sms standard deviation: 0.42

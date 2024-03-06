@@ -1,0 +1,4 @@
+Config file: configs/uralic_pos_full-train_xlmr-lapt_alpha01_emb32k_40mil.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
