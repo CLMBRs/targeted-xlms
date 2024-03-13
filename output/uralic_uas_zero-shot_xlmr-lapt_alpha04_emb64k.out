@@ -1,0 +1,51 @@
+Config file: configs/uralic_uas_zero-shot_xlmr-lapt_alpha04_emb64k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+Doing zero-shot transfer from source uralic to languages kpv, krl, mdf, olo, sms
+For file: data/ud-uralic/uralic_ud-train.conllu  words without a head: 413
+For file: data/ud-uralic/uralic_ud-dev.conllu  words without a head: 67
+random seed: 1
+num epochs: 64
+kpv accuracy: 57.22
+krl accuracy: 62.9
+mdf accuracy: 54.45
+olo accuracy: 63.17
+sms accuracy: 39.33
+----
+random seed: 2
+num epochs: 64
+kpv accuracy: 55.76
+krl accuracy: 63.9
+mdf accuracy: 54.13
+olo accuracy: 62.84
+sms accuracy: 42.23
+----
+random seed: 3
+num epochs: 60
+kpv accuracy: 57.17
+krl accuracy: 63.28
+mdf accuracy: 56.14
+olo accuracy: 62.57
+sms accuracy: 39.74
+----
+random seed: 4
+num epochs: 56
+kpv accuracy: 55.44
+krl accuracy: 63.64
+mdf accuracy: 55.01
+olo accuracy: 64.52
+sms accuracy: 41.06
+----
+all trials finished
+mean epochs: 61.0
+kpv mean accuracy: 56.4
+kpv standard deviation: 0.81
+krl mean accuracy: 63.43
+krl standard deviation: 0.38
+mdf mean accuracy: 54.93
+mdf standard deviation: 0.77
+olo mean accuracy: 63.27
+olo standard deviation: 0.75
+sms mean accuracy: 40.59
+sms standard deviation: 1.14

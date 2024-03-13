@@ -1,0 +1,154 @@
+Config file: configs/uralic_uas_full-train_xlmr-lapt_voc01_alpha01_emb32k_200k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+########
+Beginning UAS evaluation for myv
+majority label baseline: 13.28
+per word majority baseline: 7.28
+random seed: 1
+num epochs: 64
+accuracy: 65.99
+----
+random seed: 2
+num epochs: 64
+accuracy: 66.54
+----
+random seed: 3
+num epochs: 64
+accuracy: 67.4
+----
+random seed: 4
+num epochs: 64
+accuracy: 66.49
+----
+all trials finished
+mean epochs: 64.0
+mean accuracy: 66.6
+standard deviation: 0.51
+########
+Beginning UAS evaluation for sme
+majority label baseline: 20.07
+per word majority baseline: 11.82
+random seed: 1
+num epochs: 64
+accuracy: 70.96
+----
+random seed: 2
+num epochs: 64
+accuracy: 69.51
+----
+random seed: 3
+num epochs: 64
+accuracy: 68.35
+----
+random seed: 4
+num epochs: 62
+accuracy: 68.44
+----
+all trials finished
+mean epochs: 63.5
+mean accuracy: 69.32
+standard deviation: 1.05
+########
+Beginning UAS evaluation for et
+For file: data/ud-uralic/et_ewt-ud-train.conllu  words without a head: 75
+For file: data/ud-uralic/et_ewt-ud-dev.conllu  words without a head: 10
+For file: data/ud-uralic/et_ewt-ud-test.conllu  words without a head: 23
+majority label baseline: 8.07
+per word majority baseline: 8.32
+random seed: 1
+num epochs: 56
+accuracy: 84.29
+----
+random seed: 2
+num epochs: 60
+accuracy: 84.44
+----
+random seed: 3
+num epochs: 58
+accuracy: 85.88
+----
+random seed: 4
+num epochs: 56
+accuracy: 85.34
+----
+all trials finished
+mean epochs: 57.5
+mean accuracy: 84.99
+standard deviation: 0.65
+########
+Beginning UAS evaluation for fi
+majority label baseline: 11.78
+per word majority baseline: 14.91
+random seed: 1
+num epochs: 58
+accuracy: 93.68
+----
+random seed: 2
+num epochs: 38
+accuracy: 93.33
+----
+random seed: 3
+num epochs: 64
+accuracy: 93.71
+----
+random seed: 4
+num epochs: 60
+accuracy: 93.68
+----
+all trials finished
+mean epochs: 55.0
+mean accuracy: 93.6
+standard deviation: 0.16
+########
+Beginning UAS evaluation for hu
+majority label baseline: 4.67
+per word majority baseline: 4.92
+random seed: 1
+num epochs: 64
+accuracy: 82.25
+----
+random seed: 2
+num epochs: 64
+accuracy: 81.11
+----
+random seed: 3
+num epochs: 64
+accuracy: 80.59
+----
+random seed: 4
+num epochs: 64
+accuracy: 81.06
+----
+all trials finished
+mean epochs: 64.0
+mean accuracy: 81.25
+standard deviation: 0.61
+########
+Beginning UAS evaluation for ru
+For file: data/ud-uralic/ru_syntagrus-ud-train.conllu  words without a head: 1662
+For file: data/ud-uralic/ru_syntagrus-ud-dev.conllu  words without a head: 265
+For file: data/ud-uralic/ru_syntagrus-ud-test.conllu  words without a head: 271
+majority label baseline: 6.34
+per word majority baseline: 10.15
+random seed: 1
+num epochs: 60
+accuracy: 94.5
+----
+random seed: 2
+num epochs: 60
+accuracy: 94.59
+----
+random seed: 3
+num epochs: 64
+accuracy: 94.67
+----
+random seed: 4
+num epochs: 64
+accuracy: 94.63
+----
+all trials finished
+mean epochs: 62.0
+mean accuracy: 94.6
+standard deviation: 0.06
