@@ -10,12 +10,12 @@ seed: 1
 hf_model: xlm-roberta-base
 learning_rate: 1e-5
 training_epochs: 1
-train_batch_size: 25
-gradient_accumulation_steps: 8
+train_batch_size: 20
+gradient_accumulation_steps: 10
 logging_steps: 250
 eval_strategy: steps
 eval_steps: 1000
-eval_batch_size: 100
+eval_batch_size: 50
 checkpoints_directory: models/uralic/lapt_alpha01_emb128k
 save_steps: 1000
 saved_checkpoints_limit: 2
