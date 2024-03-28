@@ -1,5 +1,5 @@
 # task setup
-task: pos
+task: uas
 zero_shot_transfer: True
 transfer_source: uralic
 langs: [kpv, krl, mdf, olo, sms]
@@ -9,9 +9,9 @@ random_weights: False
 
 # model options
 model_class: xlmr
-model_name: models/uralic/lapt_alpha01_emb16k_200k/best-checkpoint
-tokenizer_path: tokenizers/uralic_spm_16k.model
-checkpoint_path: models/uralic/pos/zero-shot/xlmr_lapt_alpha01_emb16k_200k
+model_name: models/uralic/lapt_alpha01_emb64k_400k/best-checkpoint
+tokenizer_path: tokenizers/uralic_spm_64k.model
+checkpoint_path: models/uralic/uas/zero-shot/xlmr_lapt_alpha01_emb64k_400k
 
 # training options
 random_seed: 1
