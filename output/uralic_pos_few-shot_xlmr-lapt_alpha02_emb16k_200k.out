@@ -20,12 +20,12 @@ accuracy: 69.71
 ----
 random seed: 4
 num epochs: 64
-accuracy: 75.06
+accuracy: 71.87
 ----
 all trials finished
 mean epochs: 63.0
-mean accuracy: 70.24
-standard deviation: 3.07
+mean accuracy: 69.44
+standard deviation: 1.9
 ########
 Beginning POS evaluation for sme
 majority label baseline: 22.99
@@ -64,16 +64,16 @@ accuracy: 72.09
 ----
 random seed: 3
 num epochs: 64
-accuracy: 82.85
+accuracy: 78.59
 ----
 random seed: 4
 num epochs: 64
-accuracy: 72.27
+accuracy: 75.3
 ----
 all trials finished
 mean epochs: 64.0
-mean accuracy: 76.8
-standard deviation: 4.73
+mean accuracy: 76.49
+standard deviation: 3.06
 ########
 Beginning POS evaluation for fi
 majority label baseline: 23.24
@@ -92,12 +92,12 @@ accuracy: 78.18
 ----
 random seed: 4
 num epochs: 64
-accuracy: 84.54
+accuracy: 84.07
 ----
 all trials finished
 mean epochs: 64.0
-mean accuracy: 77.13
-standard deviation: 5.12
+mean accuracy: 77.01
+standard deviation: 4.95
 ########
 Beginning POS evaluation for hu
 majority label baseline: 22.42
@@ -128,7 +128,7 @@ majority label baseline: 23.84
 per word majority baseline: 88.62
 random seed: 1
 num epochs: 64
-accuracy: 86.64
+accuracy: 86.65
 ----
 random seed: 2
 num epochs: 64
@@ -140,9 +140,9 @@ accuracy: 89.41
 ----
 random seed: 4
 num epochs: 64
-accuracy: 85.4
+accuracy: 81.74
 ----
 all trials finished
 mean epochs: 64.0
-mean accuracy: 86.99
-standard deviation: 1.48
+mean accuracy: 86.08
+standard deviation: 2.76
