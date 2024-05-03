@@ -1,0 +1,25 @@
+Config file: configs/livvi_uas_zero-shot_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+Doing zero-shot transfer from source fi to languages olo
+random seed: 1
+num epochs: 62
+olo accuracy: 61.63
+----
+random seed: 2
+num epochs: 56
+olo accuracy: 60.28
+----
+random seed: 3
+num epochs: 64
+olo accuracy: 62.16
+----
+random seed: 4
+num epochs: 64
+olo accuracy: 60.28
+----
+all trials finished
+mean epochs: 61.5
+olo mean accuracy: 61.09
+olo standard deviation: 0.83

@@ -1,0 +1,28 @@
+Config file: configs/fi_uas_few-shot_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+########
+Beginning UAS evaluation for fi
+majority label baseline: 11.78
+per word majority baseline: 14.91
+random seed: 1
+num epochs: 64
+accuracy: 69.88
+----
+random seed: 2
+num epochs: 64
+accuracy: 67.19
+----
+random seed: 3
+num epochs: 64
+accuracy: 72.3
+----
+random seed: 4
+num epochs: 64
+accuracy: 67.38
+----
+all trials finished
+mean epochs: 64.0
+mean accuracy: 69.19
+standard deviation: 2.09

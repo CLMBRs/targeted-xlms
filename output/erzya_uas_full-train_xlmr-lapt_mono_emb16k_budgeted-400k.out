@@ -1,0 +1,28 @@
+Config file: configs/erzya_uas_full-train_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+########
+Beginning UAS evaluation for myv
+majority label baseline: 13.28
+per word majority baseline: 7.28
+random seed: 1
+num epochs: 64
+accuracy: 63.53
+----
+random seed: 2
+num epochs: 64
+accuracy: 63.52
+----
+random seed: 3
+num epochs: 64
+accuracy: 63.16
+----
+random seed: 4
+num epochs: 60
+accuracy: 63.27
+----
+all trials finished
+mean epochs: 63.0
+mean accuracy: 63.37
+standard deviation: 0.16

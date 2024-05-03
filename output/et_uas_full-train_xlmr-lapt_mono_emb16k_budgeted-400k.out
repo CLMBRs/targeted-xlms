@@ -1,0 +1,31 @@
+Config file: configs/et_uas_full-train_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+########
+Beginning UAS evaluation for et
+For file: data/ud-uralic/et_ewt-ud-train.conllu  words without a head: 75
+For file: data/ud-uralic/et_ewt-ud-dev.conllu  words without a head: 10
+For file: data/ud-uralic/et_ewt-ud-test.conllu  words without a head: 23
+majority label baseline: 8.07
+per word majority baseline: 8.32
+random seed: 1
+num epochs: 64
+accuracy: 84.87
+----
+random seed: 2
+num epochs: 62
+accuracy: 86.01
+----
+random seed: 3
+num epochs: 62
+accuracy: 84.8
+----
+random seed: 4
+num epochs: 64
+accuracy: 85.24
+----
+all trials finished
+mean epochs: 63.0
+mean accuracy: 85.23
+standard deviation: 0.48

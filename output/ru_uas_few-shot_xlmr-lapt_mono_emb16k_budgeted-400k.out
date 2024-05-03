@@ -1,0 +1,31 @@
+Config file: configs/ru_uas_few-shot_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+########
+Beginning UAS evaluation for ru
+For file: data/ud-uralic/ru_syntagrus-ud-train.conllu  words without a head: 1662
+For file: data/ud-uralic/ru_syntagrus-ud-dev.conllu  words without a head: 265
+For file: data/ud-uralic/ru_syntagrus-ud-test.conllu  words without a head: 271
+majority label baseline: 6.34
+per word majority baseline: 10.15
+random seed: 1
+num epochs: 64
+accuracy: 72.25
+----
+random seed: 2
+num epochs: 64
+accuracy: 67.91
+----
+random seed: 3
+num epochs: 64
+accuracy: 67.72
+----
+random seed: 4
+num epochs: 64
+accuracy: 68.57
+----
+all trials finished
+mean epochs: 64.0
+mean accuracy: 69.11
+standard deviation: 1.84

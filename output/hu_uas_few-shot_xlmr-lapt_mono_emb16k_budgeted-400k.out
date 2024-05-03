@@ -1,0 +1,28 @@
+Config file: configs/hu_uas_few-shot_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+########
+Beginning UAS evaluation for hu
+majority label baseline: 4.67
+per word majority baseline: 4.92
+random seed: 1
+num epochs: 64
+accuracy: 62.95
+----
+random seed: 2
+num epochs: 64
+accuracy: 63.48
+----
+random seed: 3
+num epochs: 64
+accuracy: 58.31
+----
+random seed: 4
+num epochs: 64
+accuracy: 67.85
+----
+all trials finished
+mean epochs: 64.0
+mean accuracy: 63.15
+standard deviation: 3.38
