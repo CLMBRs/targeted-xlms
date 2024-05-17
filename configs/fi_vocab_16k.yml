@@ -1,0 +1,5 @@
+# Sentencepiece vocabulary parameters
+tokenizer_model: unigram
+vocab_size: 16384
+train_dataset_path: data/uralic/finnish/fi_oscar_cleaned_vocab_train.txt
+output_path: tokenizers/fi_spm_16k

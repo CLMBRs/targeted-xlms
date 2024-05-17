@@ -1,0 +1,5 @@
+# Sentencepiece vocabulary parameters
+tokenizer_model: unigram
+vocab_size: 16384
+train_dataset_path: data/uralic/moksha/mdf_combined_cleaned_train.txt
+output_path: tokenizers/moksha_spm_16k
