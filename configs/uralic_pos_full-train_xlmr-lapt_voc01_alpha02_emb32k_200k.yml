@@ -9,9 +9,9 @@ random_weights: False
 
 # model options
 model_class: xlmr
-model_name: models/uralic/lapt_voc01_alpha02_emb32k_40mil/best-checkpoint
+model_name: models/uralic/lapt_voc01_alpha02_emb32k_200k/best-checkpoint
 tokenizer_path: tokenizers/uralic_spm_alpha01_32k.model
-checkpoint_path: models/uralic/pos/full-train/xlmr_lapt_voc01_alpha02_emb32k_40mil
+checkpoint_path: models/uralic/pos/full-train/xlmr_lapt_voc01_alpha02_emb32k_200k
 
 # training options
 random_seed: 1

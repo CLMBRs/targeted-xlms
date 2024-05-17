@@ -5,45 +5,45 @@ GPUs available: True
 Doing zero-shot transfer from source uralic to languages kpv, krl, mdf, olo, sms
 random seed: 1
 num epochs: 64
-kpv accuracy: 74.03
-krl accuracy: 86.65
-mdf accuracy: 75.15
-olo accuracy: 82.86
-sms accuracy: 54.18
+kpv accuracy: 73.97
+krl accuracy: 86.62
+mdf accuracy: 73.93
+olo accuracy: 84.07
+sms accuracy: 53.69
 ----
 random seed: 2
 num epochs: 62
-kpv accuracy: 73.9
-krl accuracy: 86.49
-mdf accuracy: 74.74
-olo accuracy: 83.8
-sms accuracy: 55.11
+kpv accuracy: 74.37
+krl accuracy: 86.07
+mdf accuracy: 73.83
+olo accuracy: 84.48
+sms accuracy: 53.14
 ----
 random seed: 3
-num epochs: 64
-kpv accuracy: 73.82
-krl accuracy: 86.3
-mdf accuracy: 74.22
-olo accuracy: 83.4
-sms accuracy: 54.11
+num epochs: 62
+kpv accuracy: 73.76
+krl accuracy: 86.91
+mdf accuracy: 73.24
+olo accuracy: 83.74
+sms accuracy: 53.21
 ----
 random seed: 4
 num epochs: 64
 kpv accuracy: 74.7
-krl accuracy: 86.85
-mdf accuracy: 74.49
-olo accuracy: 83.94
-sms accuracy: 54.14
+krl accuracy: 86.62
+mdf accuracy: 74.76
+olo accuracy: 84.07
+sms accuracy: 55.15
 ----
 all trials finished
-mean epochs: 63.5
-kpv mean accuracy: 74.11
-kpv standard deviation: 0.35
-krl mean accuracy: 86.57
-krl standard deviation: 0.2
-mdf mean accuracy: 74.65
-mdf standard deviation: 0.34
-olo mean accuracy: 83.5
-olo standard deviation: 0.42
-sms mean accuracy: 54.39
-sms standard deviation: 0.42
+mean epochs: 63.0
+kpv mean accuracy: 74.2
+kpv standard deviation: 0.36
+krl mean accuracy: 86.55
+krl standard deviation: 0.3
+mdf mean accuracy: 73.94
+mdf standard deviation: 0.54
+olo mean accuracy: 84.09
+olo standard deviation: 0.26
+sms mean accuracy: 53.8
+sms standard deviation: 0.81

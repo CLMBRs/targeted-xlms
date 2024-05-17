@@ -8,79 +8,79 @@ majority label baseline: 24.14
 per word majority baseline: 55.97
 random seed: 1
 num epochs: 64
-accuracy: 73.09
+accuracy: 66.48
 ----
 random seed: 2
 num epochs: 64
-accuracy: 70.89
+accuracy: 68.14
 ----
 random seed: 3
 num epochs: 64
-accuracy: 73.36
+accuracy: 74.44
 ----
 random seed: 4
-num epochs: 64
-accuracy: 74.81
+num epochs: 60
+accuracy: 73.01
 ----
 all trials finished
-mean epochs: 64.0
-mean accuracy: 73.04
-standard deviation: 1.4
+mean epochs: 63.0
+mean accuracy: 70.52
+standard deviation: 3.3
 ########
 Beginning POS evaluation for sme
 majority label baseline: 22.99
 per word majority baseline: 61.65
 random seed: 1
-num epochs: 64
-accuracy: 70.51
+num epochs: 60
+accuracy: 68.83
 ----
 random seed: 2
-num epochs: 64
-accuracy: 70.87
+num epochs: 62
+accuracy: 70.49
 ----
 random seed: 3
 num epochs: 64
-accuracy: 70.53
+accuracy: 70.25
 ----
 random seed: 4
 num epochs: 64
-accuracy: 60.52
+accuracy: 60.32
 ----
 all trials finished
-mean epochs: 64.0
-mean accuracy: 68.11
-standard deviation: 4.38
+mean epochs: 62.5
+mean accuracy: 67.47
+standard deviation: 4.18
 ########
 Beginning POS evaluation for et
 majority label baseline: 19.97
 per word majority baseline: 69.37
 random seed: 1
 num epochs: 64
-accuracy: 75.96
+accuracy: 78.26
 ----
 random seed: 2
 num epochs: 64
-accuracy: 76.8
+accuracy: 75.49
 ----
 random seed: 3
-num epochs: 62
-accuracy: 78.35
+num epochs: 64
+accuracy: 78.73
 ----
 random seed: 4
 num epochs: 64
-accuracy: 77.16
+accuracy: 68.5
 ----
 all trials finished
-mean epochs: 63.5
-mean accuracy: 77.07
-standard deviation: 0.86
+mean epochs: 64.0
+mean accuracy: 75.25
+standard deviation: 4.09
 ########
 Beginning POS evaluation for fi
 majority label baseline: 23.24
 per word majority baseline: 70.78
 random seed: 1
 num epochs: 64
-accuracy: 79.31
+accuracy: 74.21
 ----
 random seed: 2
 num epochs: 64
@@ -96,32 +96,32 @@ accuracy: 83.86
 ----
 all trials finished
 mean epochs: 64.0
-mean accuracy: 78.18
-standard deviation: 4.87
+mean accuracy: 76.9
+standard deviation: 5.07
 ########
 Beginning POS evaluation for hu
 majority label baseline: 22.42
 per word majority baseline: 60.37
 random seed: 1
 num epochs: 64
-accuracy: 89.04
+accuracy: 88.83
 ----
 random seed: 2
 num epochs: 64
-accuracy: 81.91
+accuracy: 81.47
 ----
 random seed: 3
 num epochs: 64
-accuracy: 89.32
+accuracy: 88.52
 ----
 random seed: 4
-num epochs: 62
-accuracy: 83.61
+num epochs: 64
+accuracy: 83.28
 ----
 all trials finished
-mean epochs: 63.5
-mean accuracy: 85.97
-standard deviation: 3.27
+mean epochs: 64.0
+mean accuracy: 85.53
+standard deviation: 3.22
 ########
 Beginning POS evaluation for ru
 majority label baseline: 23.84
@@ -131,18 +131,18 @@ num epochs: 64
 accuracy: 87.61
 ----
 random seed: 2
-num epochs: 62
-accuracy: 88.04
+num epochs: 64
+accuracy: 88.18
 ----
 random seed: 3
 num epochs: 64
-accuracy: 86.12
+accuracy: 86.04
 ----
 random seed: 4
 num epochs: 64
-accuracy: 85.45
+accuracy: 86.62
 ----
 all trials finished
-mean epochs: 63.5
-mean accuracy: 86.8
-standard deviation: 1.06
+mean epochs: 64.0
+mean accuracy: 87.11
+standard deviation: 0.83

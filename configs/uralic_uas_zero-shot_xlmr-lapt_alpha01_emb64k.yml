@@ -1,0 +1,23 @@
+# task setup
+task: uas
+zero_shot_transfer: True
+transfer_source: uralic
+langs: [kpv, krl, mdf, olo, sms]
+dataset_path: data/ud-uralic
+# whether to start with a randomly-initialized model
+random_weights: False
+
+# model options
+model_class: xlmr
+model_name: models/uralic/lapt_alpha01_emb64k/best-checkpoint
+tokenizer_path: tokenizers/uralic_spm_64k.model
+checkpoint_path: models/uralic/uas/zero-shot/xlmr_lapt_alpha01_emb64k
+
+# training options
+random_seed: 1
+epochs: 64
+batch_size: 36
+gradient_accumulation: 2
+max_train_examples: null
+# checkpoints every two epochs, so patience epochs is this parameter x2
+patience: 4

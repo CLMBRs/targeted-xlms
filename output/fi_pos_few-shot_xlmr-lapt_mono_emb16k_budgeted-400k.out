@@ -1,0 +1,28 @@
+Config file: configs/fi_pos_few-shot_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+########
+Beginning POS evaluation for fi
+majority label baseline: 23.24
+per word majority baseline: 70.78
+random seed: 1
+num epochs: 64
+accuracy: 76.35
+----
+random seed: 2
+num epochs: 64
+accuracy: 82.69
+----
+random seed: 3
+num epochs: 64
+accuracy: 79.28
+----
+random seed: 4
+num epochs: 64
+accuracy: 78.25
+----
+all trials finished
+mean epochs: 64.0
+mean accuracy: 79.14
+standard deviation: 2.3

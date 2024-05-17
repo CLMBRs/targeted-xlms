@@ -1,0 +1,28 @@
+Config file: configs/hu_pos_few-shot_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+########
+Beginning POS evaluation for hu
+majority label baseline: 22.42
+per word majority baseline: 60.37
+random seed: 1
+num epochs: 64
+accuracy: 88.48
+----
+random seed: 2
+num epochs: 62
+accuracy: 86.86
+----
+random seed: 3
+num epochs: 64
+accuracy: 82.35
+----
+random seed: 4
+num epochs: 64
+accuracy: 85.88
+----
+all trials finished
+mean epochs: 63.5
+mean accuracy: 85.89
+standard deviation: 2.24

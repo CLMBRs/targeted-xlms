@@ -1,0 +1,25 @@
+Config file: configs/komi_uas_zero-shot_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+Doing zero-shot transfer from source myv to languages kpv
+random seed: 1
+num epochs: 64
+kpv accuracy: 35.93
+----
+random seed: 2
+num epochs: 64
+kpv accuracy: 23.86
+----
+random seed: 3
+num epochs: 64
+kpv accuracy: 25.34
+----
+random seed: 4
+num epochs: 62
+kpv accuracy: 28.31
+----
+all trials finished
+mean epochs: 63.5
+kpv mean accuracy: 28.36
+kpv standard deviation: 4.65

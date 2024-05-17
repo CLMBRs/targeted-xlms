@@ -65,9 +65,15 @@ for input_file in input_files:
     for line in log_lines:
         if line.startswith('Beginning'):
             language = line.split(' ')[-1]
-        if line.startswith('random'):
+        if line.startswith('random seed:'):
             random_seed = line.split(' ')[-1]
-        if line.startswith('accuracy'):
+        if line.startswith('accuracy:'):
+            metric = line.split(' ')[-1]
+            output_csv_lines.append(
+                f'{eval_task}, {eval_setting}, {vocab_alpha}, {lapt_alpha}, {vocab_size}, {lapt_steps}, {language}, {random_seed}, {metric}'
+            )
+        elif eval_setting == 'zero-shot' and len(line.split(' ')) == 3 and line.split(' ')[1] == 'accuracy:':
+            language = line.split(' ')[0]
             metric = line.split(' ')[-1]
             output_csv_lines.append(
                 f'{eval_task}, {eval_setting}, {vocab_alpha}, {lapt_alpha}, {vocab_size}, {lapt_steps}, {language}, {random_seed}, {metric}'

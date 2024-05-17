@@ -1,0 +1,25 @@
+Config file: configs/moksha_pos_zero-shot_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+Doing zero-shot transfer from source myv to languages mdf
+random seed: 1
+num epochs: 58
+mdf accuracy: 46.51
+----
+random seed: 2
+num epochs: 56
+mdf accuracy: 50.67
+----
+random seed: 3
+num epochs: 62
+mdf accuracy: 51.68
+----
+random seed: 4
+num epochs: 64
+mdf accuracy: 49.99
+----
+all trials finished
+mean epochs: 60.0
+mdf mean accuracy: 49.71
+mdf standard deviation: 1.95

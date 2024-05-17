@@ -1,0 +1,25 @@
+Config file: configs/karelian_pos_zero-shot_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+Doing zero-shot transfer from source fi to languages krl
+random seed: 1
+num epochs: 60
+krl accuracy: 84.55
+----
+random seed: 2
+num epochs: 64
+krl accuracy: 84.39
+----
+random seed: 3
+num epochs: 64
+krl accuracy: 84.62
+----
+random seed: 4
+num epochs: 64
+krl accuracy: 84.62
+----
+all trials finished
+mean epochs: 63.0
+krl mean accuracy: 84.54
+krl standard deviation: 0.09

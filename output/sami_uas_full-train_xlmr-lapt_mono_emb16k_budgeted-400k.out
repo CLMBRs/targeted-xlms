@@ -1,0 +1,28 @@
+Config file: configs/sami_uas_full-train_xlmr-lapt_mono_emb16k_budgeted-400k.yml
+Pytorch version: 1.13.1
+Pytorch CUDA version: 11.7
+GPUs available: True
+########
+Beginning UAS evaluation for sme
+majority label baseline: 20.07
+per word majority baseline: 11.82
+random seed: 1
+num epochs: 60
+accuracy: 65.24
+----
+random seed: 2
+num epochs: 62
+accuracy: 65.85
+----
+random seed: 3
+num epochs: 62
+accuracy: 66.41
+----
+random seed: 4
+num epochs: 62
+accuracy: 67.08
+----
+all trials finished
+mean epochs: 61.5
+mean accuracy: 66.15
+standard deviation: 0.68

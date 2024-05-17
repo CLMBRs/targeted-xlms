@@ -1,0 +1,23 @@
+# task setup
+task: uas
+zero_shot_transfer: False
+transfer_source: None
+langs: [fi]
+dataset_path: data/ud-uralic
+# whether to start with a randomly-initialized model
+random_weights: False
+
+# model options
+model_class: xlmr
+model_name: models/finnish/lapt_emb16k_budgeted-400k/best-checkpoint
+tokenizer_path: tokenizers/fi_spm_16k.model
+checkpoint_path: models/finnish/uas/full-train/xlmr_lapt_mono_emb16k_budgeted-400k
+
+# training options
+random_seed: 1
+epochs: 64
+batch_size: 36
+gradient_accumulation: 2
+max_train_examples: 32768
+# checkpoints every two epochs, so patience epochs is this parameter x2
+patience: 4
